@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: teamscloud-runtime-xiaofhuav2
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 3
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: teamscloud-runtime-xiaofhuav2
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: teamscloud-runtime-xiaofhuav2
+    spec:
+      containers:
+      - env:
+        - name: CLIENT_ID
+          value: drf
+        - name: CLIENT_SECRET
+          value: sss
+        - name: OAUTH_TOKEN_ENDPOINT
+          value: https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47/oauth2/v2.0/token
+        image: modstestshared.azurecr.io/xfsample
+        imagePullPolicy: Always
+        name: teams-cloud
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 200m
+            memory: 128Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/teamscloud_runtime/shared_config
+          name: shared-config-volume
+          readOnly: true
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        beta.kubernetes.io/os: linux
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: teamscloud-runtime-config-shared
+        name: shared-config-volume

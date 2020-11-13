@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: xftest
+  labels:
+    app: test
+    env: prod
+spec:
+  containers:
+  - image: luksa/kubia
+    name: xfcontainer
+    ports:
+    - containerPort: 8080
+      protocol: TCP
